@@ -1,20 +1,21 @@
-import logging
+import os
 from constants import file_commands
+from utils.my_logger import logger
 
 
 def main() -> None:
     while True:
-        inp: list[str] = input().split()
+        inp: list[str] = input(f"{os.getcwd()}> ").split()
 
         if inp[0] == 'exit':
             break
 
-        logging.info(' '.join(inp))
+        logger.info(' '.join(inp))
 
         try:
             file_commands[inp[0]](inp[1:])
         except KeyError:
-            logging.error(f"command '{inp[0]}' not found")
+            logger.error(f"command '{inp[0]}' not found")
             print(f"command '{inp[0]}' not found")
 
 

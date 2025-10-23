@@ -1,7 +1,7 @@
 import os
 import stat
-import logging
 from datetime import datetime
+from utils.my_logger import logger
 
 
 def assign(lines: list[str]) -> None:
@@ -15,7 +15,6 @@ def assign(lines: list[str]) -> None:
     max_ln: int = max(4, max(lens))
 
     print(f"MODE{' ' * (8 + (max_ln - 4))}SIZE{' ' * 9}DATE   TIME     NAME")
-    print()
     for line in lines:
         if line[0] == '?':
             print(f"-?????????{' ' * (max_ln + 1)}?{' ' * 12}?{' ' * 6}?  {line[1]}")
@@ -42,7 +41,7 @@ def get_info(abspath: str, file_dir: str) -> list[str]:
         return ['?', file_dir]
 
 
-def run_ls(inp: list[str | None]=[]) -> None:
+def run_ls(inp: list[str | None] = []) -> None:
     options: list[str] = []
     pathes: list[str] = []
 
@@ -55,11 +54,11 @@ def run_ls(inp: list[str | None]=[]) -> None:
         pathes.append(os.getcwd())
 
     if len(set(options)) == 1 and options[0] != '-l':
-        logging.error(f"Option '{options[0]}' does not exist")
-        print(f"Option '{options[0]}' does not exist")
+        logger.error(f"'{options[0]}': invalid option")
+        print(f"'{options[0]}': invalid option")
         return
     elif len(set(options)) > 1:
-        logging.error("More than 1 option")
+        logger.error("More than 1 option")
         print("More then 1 option")
         return
 
@@ -67,15 +66,17 @@ def run_ls(inp: list[str | None]=[]) -> None:
         abspath: str = path if os.path.isabs(path) else os.path.abspath(path)
 
         if os.path.exists(abspath):
+            if len(pathes) > 1:
+                print(f"{path}:")
             if not options:
-                logging.info("OK. command 'ls' is successful complete")
+                logger.info("OK. command 'ls' is successful complete")
                 if os.path.isdir(abspath):
                     print(os.listdir(abspath))
                 else:
                     print(os.path.split(abspath)[1])
                     # print(path)
             else:
-                logging.info(f"OK. command 'ls {' '.join(options)}' is successful complete")
+                logger.info(f"OK. command 'ls {' '.join(options)}' is successful complete")
                 lines: list[str] = []
                 if os.path.isdir(abspath):
                     for file_dir in os.listdir(path):
@@ -85,6 +86,7 @@ def run_ls(inp: list[str | None]=[]) -> None:
                     info: list[str] = get_info(os.path.split(abspath)[0], os.path.split(abspath)[1])
                     lines.append(info)
                 assign(lines)
+                print()
         else:
-            logging.error(f"ls: cannot access {path}: No such file or directory")
-            print(f"ls: cannot access {path}: No such file or directory")
+            logger.error(f"ls: cannot access '{path}': No such file or directory")
+            print(f"ls: cannot access '{path}': No such file or directory\n")
