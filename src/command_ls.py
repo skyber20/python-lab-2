@@ -22,7 +22,6 @@ def assign(lines: list[str]) -> None:
         else:
             print(f"{line[0]}{' ' * (max_ln + 2 - len(line[1]))}{line[1]}{' ' * (13 - len(line[2]))}{line[2]}"
                   f"{' ' * (7 - len(line[3]))}{line[3]}  {line[4]}")
-    print()
 
 
 def get_time(unix_time: datetime):
@@ -31,16 +30,16 @@ def get_time(unix_time: datetime):
     return date, time
 
 
-def get_info(abspath: str) -> list[str]:
+def get_info(abspath: str, file_dir: str) -> list[str]:
     try:
-        stats = os.stat(abspath)
+        stats = os.stat(os.path.join(abspath, file_dir))
         mode: str = stat.filemode(stats.st_mode)
         size: int = stats.st_size
         date, time = get_time(datetime.fromtimestamp(stats.st_mtime))
-        name: str = os.path.split(abspath)[1]
+        name: str = file_dir
         return list(map(str, [mode, size, date, time, name]))
     except (FileNotFoundError, OSError, PermissionError):
-        return ['?', os.path.split(abspath)[1]]
+        return ['?', file_dir]
 
 
 def run_ls(inp: list[str | None]=[]) -> None:
@@ -80,11 +79,10 @@ def run_ls(inp: list[str | None]=[]) -> None:
                 lines: list[str] = []
                 if os.path.isdir(abspath):
                     for file_dir in os.listdir(path):
-                        print(os.path.abspath(file_dir))
-                        info: list[str] = get_info(os.path.abspath(file_dir))
+                        info: list[str] = get_info(abspath, file_dir)
                         lines.append(info)
                 else:
-                    info: list[str] = get_info(abspath)
+                    info: list[str] = get_info(os.path.split(abspath)[0], os.path.split(abspath)[1])
                     lines.append(info)
                 assign(lines)
         else:
