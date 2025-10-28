@@ -88,5 +88,5 @@ def run_ls(inp: list[str | None] = []) -> None:
                 assign(lines)
                 print()
         else:
-            logger.error(f"ls: cannot access '{path}': No such file or directory")
-            print(f"ls: cannot access '{path}': No such file or directory\n")
+            logger.error(f"ls: cannot access {path}: No such file or directory")
+            print(f"ls: cannot access {path}: No such file or directory\n")

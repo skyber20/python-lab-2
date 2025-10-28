@@ -19,7 +19,7 @@ def run_cd(inp: list[str] = []) -> None:
         return
 
     if inp[0].startswith('~'):
-        inp[0] = inp[0].replace('~', os.path.expanduser('~'))
+        inp[0] = inp[0].replace('~', os.path.expanduser('~').replace("\\", "/"))
     abspath: str = inp[0] if os.path.isabs(inp[0]) else os.path.abspath(inp[0])
 
     if os.path.exists(abspath):
