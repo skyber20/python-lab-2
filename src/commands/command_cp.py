@@ -13,7 +13,7 @@ def run_cp(inp: list[str]) -> dict[str, str | bool | os.PathLike]:
         else:
             pathes.append(i)
 
-    if len(pathes) != 2:
+    if len(pathes) < 2:
         logger.error(f"Not 2 paths were introduced")
         print(f"Not 2 paths were introduced")
         return {
@@ -34,62 +34,58 @@ def run_cp(inp: list[str]) -> dict[str, str | bool | os.PathLike]:
             'status': False
         }
 
-    source: str = os.path.abspath(pathes[0])
-    destination: str = os.path.abspath(pathes[1])
+    flag: bool = False
+    last: str = os.path.abspath(pathes[-1])
 
-    if os.path.exists(source):
-        if os.path.isfile(source):
-            try:
-                shutil.copy(source, destination)
-                logger.info(f"OK. command 'cp' is successful complete")
-                return {
-                    'status': True
-                }
-            except PermissionError:
-                logger.error(f"cp: {pathes[1]}: Permission denied")
-                print(f"cp: {pathes[1]}: Permission denied")
-            except FileNotFoundError:
-                logger.error(f"cp: cannot create {pathes[1]}")
-                print(f"cp: cannot create {pathes[1]}")
-            finally:
+    for elem in pathes[:-1]:
+        source: str = os.path.abspath(elem)
+        if os.path.exists(last) and os.path.isdir(last):
+            destination: str = os.path.join(last, os.path.basename(source))
+        else:
+            destination: str = last
+
+        if os.path.exists(source):
+            if os.path.isfile(source):
+                try:
+                    shutil.copy(source, destination)
+                    flag = True
+                    logger.info(f"OK. command 'cp' is successful complete")
+                except PermissionError:
+                    logger.error(f"cp: {pathes[-1]}: Permission denied")
+                    print(f"cp: {pathes[-1]}: Permission denied")
+                except FileNotFoundError:
+                    logger.error(f"cp: cannot create {pathes[-1]}")
+                    print(f"cp: cannot create {pathes[-1]}")
+            elif options:
+                if os.path.exists(os.path.split(destination)[0]):
+                    try:
+                        shutil.copytree(source, destination, dirs_exist_ok=True, copy_function=shutil.copy)
+                        flag = True
+                        logger.info(f"OK. command 'cp -r' is successful complete")
+                    except PermissionError:
+                        logger.error(f"cp: {pathes[-1]}: Permission denied")
+                        print(f"cp: {pathes[-1]}: Permission denied")
+                    except FileExistsError:
+                        logger.error(f"cp: cannot overwrite non-directory {pathes[-1]} with directory {elem}")
+                        print(f"cp: cannot overwrite non-directory {pathes[-1]} with directory {elem}")
+                else:
+                    logger.error(f"cp: cannot create {pathes[-1]}")
+                    print(f"cp: cannot create {pathes[-1]}")
+            else:
+                logger.error(f"Need option -r for copy catalog")
+                print(f"Need option -r for copy catalog")
                 return {
                     'status': False
                 }
+        else:
+            logger.error(f"cp: {elem}: No such file or directory")
+            print(f"cp: {elem}: No such file or directory")
 
-        if options:
-            if os.path.exists(os.path.split(destination)[0]):
-                try:
-                    shutil.copytree(source, destination, dirs_exist_ok=True, copy_function=shutil.copy)
-                    logger.info(f"OK. command 'cp -r' is successful complete")
-                    return {
-                        'status': True
-                    }
-                except PermissionError:
-                    logger.error(f"cp: {pathes[1]}: Permission denied")
-                    print(f"cp: {pathes[1]}: Permission denied")
-                except FileExistsError:
-                    logger.error(f"cp: cannot overwrite non-directory {pathes[1]} with directory {pathes[0]}")
-                    print(f"cp: cannot overwrite non-directory {pathes[1]} with directory {pathes[0]}")
-                finally:
-                    return {
-                        'status': False
-                    }
-
-            logger.error(f"cp: cannot create {pathes[1]}")
-            print(f"cp: cannot create {pathes[1]}")
-            return {
-                'status': False
-            }
-
-        logger.error(f"Need option -r for copy catalog")
-        print(f"Need option -r for copy catalog")
+    if flag:
         return {
-            'status': False
+            'status': flag
         }
 
-    logger.error(f"cp: {pathes[0]}: No such file or directory")
-    print(f"cp: {pathes[0]}: No such file or directory")
     return {
-        'status': False
+        'status': flag
     }
-
