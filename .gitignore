@@ -5,3 +5,4 @@ __pycache__/
 experiments/
 test_log/
 shell.log
+.trash/

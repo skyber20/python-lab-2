@@ -1,6 +1,5 @@
 import os
 from utils.my_logger import logger
-from utils.my_logger import logger
 
 
 def run_mv(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
