@@ -17,8 +17,14 @@ def run_history(n: int = -1, inp: str = '', show: bool = True) -> None:
     abs_history: str = create_history_file()
 
     if not show:
-        with open(abs_history, 'a', encoding='utf-8') as h:
-            h.write(inp.strip() + '\n')
+        with open(abs_history, encoding='utf-8') as h:
+            try:
+                last_line: str = h.readlines()[-1].strip()
+            except IndexError:
+                last_line: str = ''
+        if last_line != inp.strip():
+            with open(abs_history, 'a', encoding='utf-8') as h:
+                h.write(inp.strip() + '\n')
     else:
         with open(abs_history, encoding='utf-8') as h:
             lines = h.readlines()

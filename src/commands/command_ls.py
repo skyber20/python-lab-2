@@ -2,6 +2,7 @@ import os
 import stat
 from datetime import datetime
 from utils.my_logger import logger
+from utils.errors_handler import handle_error
 
 
 def assign(lines: list[str]) -> None:
@@ -54,8 +55,9 @@ def run_ls(inp: list[str | None] = []) -> None:
         pathes.append(os.getcwd())
 
     if len(set(options)) == 1 and options[0] != '-l':
-        logger.error(f"'{options[0]}': invalid option")
-        print(f"'{options[0]}': invalid option")
+        # logger.error(f"'{options[0]}': invalid option")
+        # print(f"'{options[0]}': invalid option")
+        handle_error("invalid_option", "ls", options[0], need_log=True)
         return
     elif len(set(options)) > 1:
         logger.error("More than 1 option")

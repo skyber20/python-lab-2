@@ -22,8 +22,8 @@ def main() -> None:
         try:
             file_commands[tokens[0]](tokens[1:])
         except KeyError:
-            logger.error(f"command '{tokens[0]}' not found")
-            print(f"command '{tokens[0]}' not found")
+            logger.error(f"{tokens[0]}: Command not found")
+            print(f"{tokens[0]}: Команда не найдена")
 
 
 if __name__ == '__main__':
