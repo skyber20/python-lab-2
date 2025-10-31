@@ -4,3 +4,7 @@ from src.commands.command_cat import run_cat
 from src.commands.command_cp import run_cp
 from src.commands.command_mv import run_mv
 from src.commands.command_rm import run_rm
+from src.commands.command_zip import run_zip
+from src.commands.command_unzip import run_unzip
+from src.commands.command_tar import run_tar
+from src.commands.command_untar import run_untar
