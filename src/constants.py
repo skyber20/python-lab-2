@@ -1,7 +1,7 @@
 from typing import Callable
 from src import (
     run_ls, run_cd, run_cat, run_cp, run_mv, run_rm, run_zip, run_unzip, run_tar, run_untar,
-    run_grep
+    run_grep, run_history
 )
 
 file_commands: dict[str, Callable] = {
@@ -15,5 +15,6 @@ file_commands: dict[str, Callable] = {
     'unzip': run_unzip,
     'tar': run_tar,
     'untar': run_untar,
-    'grep': run_grep
+    'grep': run_grep,
+    'history': run_history
 }

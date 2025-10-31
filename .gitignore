@@ -6,3 +6,4 @@ experiments/
 test_log/
 shell.log
 .trash/
+.history.txt

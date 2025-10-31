@@ -9,3 +9,4 @@ from src.commands.command_unzip import run_unzip
 from src.commands.command_tar import run_tar
 from src.commands.command_untar import run_untar
 from src.commands.command_grep import run_grep
+from src.commands.command_history import run_history

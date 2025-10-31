@@ -3,12 +3,14 @@ import oslex
 import sys
 from constants import file_commands
 from utils.my_logger import logger
+from src.commands.command_history import run_history
 
 
 def main() -> None:
     while sys.stdin:
         inp: str = input(f"{os.getcwd()}> ")
         logger.info(inp)
+        run_history(inp=inp, show=False)
 
         if inp == 'exit':
             print("Bye")
