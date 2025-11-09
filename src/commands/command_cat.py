@@ -1,5 +1,6 @@
 from pathlib import Path
 from utils.my_logger import logger
+from utils.errors_handler import handle_error
 
 
 def run_cat(inp: list[str] = []) -> None:
@@ -13,8 +14,7 @@ def run_cat(inp: list[str] = []) -> None:
             pathes.append(i)
 
     if options:
-        logger.error(f"cd: '{options[0]}': invalid option")
-        print(f"cd: '{options[0]}': invalid option")
+        handle_error("invalid_option", "cat", options[0], need_log=True)
         return
 
     for i in pathes:
@@ -22,18 +22,15 @@ def run_cat(inp: list[str] = []) -> None:
         abs_path: Path = path.absolute()
 
         if abs_path.exists():
-            print(f"{path}:")
             if abs_path.is_dir():
                 logger.error(f"cat: {path} is a directory")
-                print(f"Is a directory\n")
+                print(f"cat: {path}: Это папка\n")
             else:
                 try:
                     print(abs_path.read_text(encoding='utf-8'), end='\n\n')
                     logger.info(f"OK. command 'cat' is successful complete")
                 except UnicodeDecodeError:
-                    # print(abs_path.read_bytes(), end='\n\n')
-                    logger.error(f"{path} is not a docx file")
-                    print(f"{path} is not a docx file")
+                    logger.error(f"cat: {path}: is not a docx file")
+                    print(f"cat: {path}: это не текстовый документ")
         else:
-            logger.error(f"cat: cannot access {path}: No such file")
-            print(f"cat: cannot access {path}: No such file\n")
+            handle_error("path_not_found", "cat", path, need_log=True)

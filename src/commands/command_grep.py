@@ -1,9 +1,10 @@
 import os
 import re
 
+
 def run_grep(inp: list[str]) -> None:
-    if len(inp) < 2:
-        print("Нужно как минимум 2 аргумента")
+    if len(inp) != 2:
+        print("Требуется 2 аргумента")
         return
 
     pattern: str = inp[0]
@@ -59,5 +60,3 @@ def run_grep(inp: list[str]) -> None:
 
     if not flag:
         print(f"Не удалось найти строки, содержащие pattern: {pattern}")
-
-

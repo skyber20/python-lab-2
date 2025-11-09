@@ -1,12 +1,13 @@
 import os
 from datetime import datetime
 from utils.my_logger import logger
+from src.constants import TRASH_DIR
+from src.commands.command_undo import save_action
 
 
 def create_trash() -> str:
-    trash_dir: str = '.trash'
     cur_dir: str = os.path.dirname(__file__)
-    abs_trash: str = os.path.abspath(os.path.join(cur_dir, '..', '..', trash_dir))
+    abs_trash: str = os.path.abspath(os.path.join(cur_dir, '..', '..', TRASH_DIR))
 
     if not os.path.exists(abs_trash):
         os.makedirs(abs_trash)
@@ -51,6 +52,12 @@ def run_rm(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
     trash_dir: str = create_trash()
     flag: bool = False
     k: int = 0
+    dict_for_undo = {
+        'command': 'rm',
+        'sources': [],
+        'destinations': [],
+        'is_dirs': []
+    }
 
     for p in pathes:
         abs_path: str = os.path.abspath(p)
@@ -65,7 +72,10 @@ def run_rm(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
                     sure: str = input(f"{p}: y/n ").lower()
                     flag = True
                     if sure == 'y':
-                        del_file_dir(abs_path, trash_dir, True)
+                        path_to_trash = del_file_dir(abs_path, trash_dir, True)
+                        dict_for_undo['sources'].append(abs_path)
+                        dict_for_undo['destinations'].append(path_to_trash)
+                        dict_for_undo['is_dirs'] = True
                         k += 1
                 else:
                     s: str = f"rm: cannot remove {p}: Is a directory"
@@ -74,7 +84,10 @@ def run_rm(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
                 sure: str = input(f"{p}: y/n ").lower()
                 flag = True
                 if sure == 'y':
-                    del_file_dir(abs_path, trash_dir)
+                    path_to_trash = del_file_dir(abs_path, trash_dir)
+                    dict_for_undo['sources'].append(abs_path)
+                    dict_for_undo['destinations'].append(path_to_trash)
+                    dict_for_undo['is_dirs'] = False
                     k += 1
         else:
             s: str = f"rm: {p}: No such file or directory"
@@ -83,6 +96,7 @@ def run_rm(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
     if flag:
         logger.info(f"OK. command 'mv' is successful complete")
         if k:
+            save_action(dict_for_undo)
             return True
         return True
 

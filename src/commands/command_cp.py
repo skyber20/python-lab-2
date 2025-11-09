@@ -1,6 +1,7 @@
 import shutil
 import os
 from utils.my_logger import logger
+from utils.errors_handler import handle_error
 
 
 def run_cp(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
@@ -14,18 +15,15 @@ def run_cp(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
             pathes.append(i)
 
     if len(pathes) < 2:
-        logger.error(f"Not 2 paths were introduced")
-        print(f"Not 2 paths were introduced")
+        handle_error("invalid_amount_params", "cp", need_log=True)
         return False
 
     if len(set(options)) > 1:
-        logger.error(f"Only one option can be introduced")
-        print(f"Only one option can be introduced")
+        handle_error("invalid_amount_options", "cp", need_log=True)
         return False
 
     if options and options[0] != '-r':
-        logger.error(f"cat: {options[0]}: invalid option")
-        print(f"cp: {options[0]}: invalid option")
+        handle_error("invalid_option", "cp", options[0], need_log=True)
         return False
 
     last: str = os.path.abspath(pathes[-1])
@@ -35,6 +33,7 @@ def run_cp(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
         source: str = os.path.abspath(p)
 
         if not os.path.exists(source):
+            handle_error("path_not_found", "cp", p)
             continue
 
         if os.path.isdir(last):
@@ -45,34 +44,35 @@ def run_cp(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
         try:
             if os.path.isdir(source):
                 if not options:
-                    print('...')
+                    handle_error("need_option_not_found", "cp", "-r")
                     continue
 
                 if not os.path.exists(os.path.dirname(destination)):
-                    print('...')
+                    handle_error("path_not_found", "cp", last)
                     continue
 
                 if os.path.exists(destination):
-                    print('...')
-                    continue
+                    handle_error("already_exists", "cp", destination, need_log=True)
+                    return False
 
                 shutil.copytree(source, destination)
                 flag = True
             elif os.path.isfile(source):
                 if not os.path.exists(os.path.dirname(destination)):
-                    print('...')
+                    handle_error("path_not_found", "cp", last)
                     continue
 
                 if os.path.exists(destination):
-                    print('...')
-                    continue
+                    handle_error("already_exists", "cp", destination, need_log=True)
+                    return False
 
                 shutil.copy(source, destination)
                 flag = True
         except Exception:
-            print('e')
+            print(f'Не удалось скопировать {p} в {last}')
 
     if flag:
+        logger.info("OK. command 'cp' is successful complete")
         return True
 
     return False

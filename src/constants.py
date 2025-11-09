@@ -18,3 +18,5 @@ file_commands: dict[str, Callable] = {
     'grep': run_grep,
     'history': run_history
 }
+TRASH_DIR = '.trash'
+UNDO_FILE = "undo_commands.json"

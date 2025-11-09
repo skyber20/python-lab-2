@@ -1,11 +1,11 @@
 import os.path
 from utils.my_logger import logger
+from utils.errors_handler import handle_error
 
 
 def run_cd(inp: list[str] = []) -> None:
     if len(inp) > 1:
-        logger.error("cd: too many arguments")
-        print("cd: too many arguments")
+        handle_error("invalid_amount_params", "cd", need_log=True)
         return
 
     elif not inp:
@@ -14,8 +14,7 @@ def run_cd(inp: list[str] = []) -> None:
         return
 
     elif inp[0].startswith('-'):
-        logger.error(f"cd: '{inp[0]}': invalid option")
-        print(f"cd: '{inp[0]}': invalid option")
+        handle_error("invalid_option", "cd", inp[0], need_log=True)
         return
 
     if inp[0].startswith('~'):
@@ -28,7 +27,6 @@ def run_cd(inp: list[str] = []) -> None:
             os.chdir(abspath)
         else:
             logger.error(f"cd: {inp[0]}: Not a directory")
-            print(f"cd: {inp[0]}: Not a directory")
+            print(f"cd: {inp[0]}: Не папка")
     else:
-        logger.error(f"cd: {inp[0]}: No such file or directory")
-        print(f"cd: {inp[0]}: No such file or directory")
+        handle_error("path_not_found", "cd", inp[0], need_log=True)

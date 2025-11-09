@@ -3,6 +3,7 @@ import oslex
 import sys
 from constants import file_commands
 from utils.my_logger import logger
+from utils.errors_handler import handle_error
 from src.commands.command_history import run_history
 
 
@@ -16,14 +17,17 @@ def main() -> None:
             print("Bye")
             break
 
-        clear_inp = inp.replace("'", '"').replace("\\", "/")
+        if inp == 'help':
+            dict_descr_cmds: dict[str, str] = {}
+            continue
+
+        clear_inp: str = inp.replace("'", '"').replace("\\", "/")
         tokens: list[str] = oslex.split(clear_inp)
 
         try:
             file_commands[tokens[0]](tokens[1:])
         except KeyError:
-            logger.error(f"{tokens[0]}: Command not found")
-            print(f"{tokens[0]}: Команда не найдена")
+            handle_error("command_not_found", tokens[0], need_log=True)
 
 
 if __name__ == '__main__':

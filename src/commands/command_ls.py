@@ -55,13 +55,11 @@ def run_ls(inp: list[str | None] = []) -> None:
         pathes.append(os.getcwd())
 
     if len(set(options)) == 1 and options[0] != '-l':
-        # logger.error(f"'{options[0]}': invalid option")
-        # print(f"'{options[0]}': invalid option")
         handle_error("invalid_option", "ls", options[0], need_log=True)
         return
+
     elif len(set(options)) > 1:
-        logger.error("More than 1 option")
-        print("More then 1 option")
+        handle_error("invalid_amount_options", "ls", need_log=True)
         return
 
     for path in pathes:
@@ -76,10 +74,9 @@ def run_ls(inp: list[str | None] = []) -> None:
                     print(os.listdir(abspath))
                 else:
                     print(os.path.split(abspath)[1])
-                    # print(path)
             else:
-                logger.info(f"OK. command 'ls {' '.join(options)}' is successful complete")
-                lines: list[str] = []
+                logger.info(f"OK. command ls is successful complete")
+                lines = []
                 if os.path.isdir(abspath):
                     for file_dir in os.listdir(path):
                         info: list[str] = get_info(abspath, file_dir)
@@ -90,5 +87,4 @@ def run_ls(inp: list[str | None] = []) -> None:
                 assign(lines)
                 print()
         else:
-            logger.error(f"ls: cannot access {path}: No such file or directory")
-            print(f"ls: cannot access {path}: No such file or directory\n")
+            handle_error("path_not_found", "ls", path, need_log=True)
