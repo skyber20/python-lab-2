@@ -15,17 +15,17 @@ def create_trash() -> str:
     return abs_trash
 
 
-def del_file_dir(abs_apth: str, trash_dir: str, is_dir: bool = False) -> str:
-    name: str = os.path.basename(abs_apth)
+def del_file_dir(abs_path: str, trash_dir: str) -> str:
+    name: str = os.path.basename(abs_path)
     timestamp: str = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     name_to_trash: str = f"{timestamp}_{name}"
     path_to_trash: str = os.path.join(trash_dir, name_to_trash)
 
-    os.rename(abs_apth, path_to_trash)
+    os.rename(abs_path, path_to_trash)
     return path_to_trash
 
 
-def run_rm(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
+def run_rm(inp: list[str]) -> None:
     options: list[str] = []
     pathes: list[str] = []
     for i in inp:
@@ -37,68 +37,58 @@ def run_rm(inp: list[str]) -> dict[str, str | bool | os.PathLike] | bool:
     if not pathes:
         logger.error("at least 1 path must be entered")
         print("rm: At least 1 path must be entered")
-        return False
+        return
 
     if len(set(options)) > 1:
         logger.error(f"rm: Only one option can be introduced")
         print(f"rm: Only one option can be introduced")
-        return False
+        return
 
     if options and options[0] != '-r':
         logger.error(f"rm: {options[0]}: invalid option")
         print(f"rm: {options[0]}: invalid option")
-        return False
+        return
 
-    trash_dir: str = create_trash()
-    flag: bool = False
-    k: int = 0
+    trash_dir = create_trash()
+    k = 0
+    answer_y = True
     dict_for_undo = {
         'command': 'rm',
         'sources': [],
         'destinations': [],
-        'is_dirs': []
     }
 
     for p in pathes:
-        abs_path: str = os.path.abspath(p)
-        if p in ['/', '.', '..'] or abs_path == os.path.abspath('.'):
+        source = os.path.abspath(p)
+        if p in ['/', '.', '..'] or source == os.path.abspath('.'):
             s: str = "rm: cannot be deleted '.', '..', '/'"
             print(s)
             continue
 
-        if os.path.exists(abs_path):
-            if os.path.isdir(abs_path):
-                if options:
-                    sure: str = input(f"{p}: y/n ").lower()
-                    flag = True
-                    if sure == 'y':
-                        path_to_trash = del_file_dir(abs_path, trash_dir, True)
-                        dict_for_undo['sources'].append(abs_path)
-                        dict_for_undo['destinations'].append(path_to_trash)
-                        dict_for_undo['is_dirs'] = True
-                        k += 1
-                else:
-                    s: str = f"rm: cannot remove {p}: Is a directory"
-                    print(s)
-            elif os.path.isfile(abs_path):
-                sure: str = input(f"{p}: y/n ").lower()
-                flag = True
-                if sure == 'y':
-                    path_to_trash = del_file_dir(abs_path, trash_dir)
-                    dict_for_undo['sources'].append(abs_path)
-                    dict_for_undo['destinations'].append(path_to_trash)
-                    dict_for_undo['is_dirs'] = False
-                    k += 1
-        else:
-            s: str = f"rm: {p}: No such file or directory"
-            print(s)
+        if not os.path.exists(source):
+            print("Нет такого пути")
+            continue
 
-    if flag:
-        logger.info(f"OK. command 'mv' is successful complete")
-        if k:
-            save_action(dict_for_undo)
-            return True
-        return True
+        if os.path.isdir(source) and not options:
+            print("Для удаления папки нужна опция -r")
+            continue
 
-    logger.error(s)
-    return False
+        sure = input(f"{p}: y/n ").lower()
+        if sure != 'y':
+            answer_y = False
+            continue
+
+        try:
+            path_to_trash = del_file_dir(source, trash_dir)
+            dict_for_undo['sources'].append(source)
+            dict_for_undo['destinations'].append(path_to_trash)
+            k += 1
+        except Exception:
+            print("Не удалось удалить папку/файл")
+
+    if k:
+        save_action(dict_for_undo)
+        return
+    elif not answer_y:
+        return
+    logger.error("rm: Error")

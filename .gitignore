@@ -7,3 +7,4 @@ test_log/
 shell.log
 .trash/
 .history.txt
+undo_commands.json

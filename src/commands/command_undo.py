@@ -17,8 +17,13 @@ def create_undo_file() -> str:
 
 def save_action(inp: dict[str, str | list[str | bool]]) -> None:
     undo_file = create_undo_file()
-    with open(undo_file, 'a', encoding='utf-8') as f:
-       json.dump(inp, f, ensure_ascii=False, indent=2)
+    with open(undo_file, 'r', encoding='utf-8') as f:
+       actions = json.load(f)
+
+    actions.append(inp)
+
+    with open(undo_file, 'w', encoding='utf-8') as f:
+        json.dump(inp, f, ensure_ascii=False, indent=2)
 
 
 def check_exist_paths(sources: list[str], destinations: list[str]) -> bool:
@@ -29,9 +34,10 @@ def check_exist_paths(sources: list[str], destinations: list[str]) -> bool:
             print(f"{os.path.basename(source)}: такого пути нет")
         if not os.path.exists(os.path.dirname(dest)):
             flag = False
-            print(f"{os.path.dirname(dest)}: невозможно переместить файл/папку в несуществующий путь")
-
-        return flag
+            print(f"{os.path.dirname(dest)}: невозможно переместить папку/файл по несуществующему")
+        if not flag:
+            return False
+    return True
 
 
 def execute_undo_action(inp: dict[str, str | list[str | bool]]) -> bool:
@@ -64,10 +70,10 @@ def run_undo(inp: list[str]) -> None:
 
     undo_file = create_undo_file()
     with open(undo_file, 'r', encoding='utf-8') as f:
-        actions = json.load(f)
+        actions = [json.load(f)]
 
-    if not actions:
-        print("Нет операция для undo")
+    if not actions[0]:
+        print("Нет операций для undo")
         return
 
     success = execute_undo_action(actions[-1])
