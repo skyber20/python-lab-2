@@ -1,11 +1,11 @@
 import os
-from utils.my_logger import logger
 from src.commands.command_undo import save_action
+from src import exceptions
 
 
 def run_mv(inp: list[str]) -> None:
-    options: list[str] = []
-    pathes: list[str] = []
+    options = []
+    pathes = []
 
     for i in inp:
         if i.startswith('-'):
@@ -14,14 +14,10 @@ def run_mv(inp: list[str]) -> None:
             pathes.append(i)
 
     if len(pathes) < 2:
-        logger.error(f"mv: Not 2 paths were introduced")
-        print(f"mv: Not 2 paths were introduced")
-        return
+        raise exceptions.InvalidAmountPaths('mv')
 
     if options:
-        logger.error(f"mv: {options[0]}: Invalid option")
-        print(f"mv: {options[0]}: Invalid option")
-        return
+        raise exceptions.InvalidAmountOptions('mw')
 
     destination = os.path.abspath(pathes[-1])
     k = 0
@@ -55,6 +51,6 @@ def run_mv(inp: list[str]) -> None:
 
     if k:
         save_action(dict_for_undo)
-        logger.info(f"OK. command 'mv' is successful complete")
+        exceptions.logger.info(f"mv: OK")
         return
-    logger.error("mv: Error")
+    exceptions.logger.error("mv: Не OK")

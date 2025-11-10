@@ -1,16 +1,16 @@
 import os
 import re
+from src import exceptions
 
 
 def run_grep(inp: list[str]) -> None:
     if len(inp) != 2:
-        print("Требуется 2 аргумента")
-        return
+        raise exceptions.InvalidAmountArguments('grep')
 
-    pattern: str = inp[0]
-    search_path: str = os.path.abspath(inp[1])
-    have_r: bool = False
-    have_i: bool = False
+    pattern = inp[0]
+    search_path = os.path.abspath(inp[1])
+    have_r = False
+    have_i = False
 
     for i in inp[2:]:
         if i == '-r':
@@ -18,21 +18,20 @@ def run_grep(inp: list[str]) -> None:
         elif i == '-i':
             have_i = True
         else:
-            print(f"{i}: Неизвестная опция")
-            return
+            raise exceptions.InvalidOption('grep', i)
 
     if not os.path.exists(search_path):
-        print(f"{inp[1]}: Такого пути не существует")
-        return
+        raise exceptions.PathNotExists('grep', os.path.basename(search_path))
 
     try:
         ignore_case: bool = re.IGNORECASE if have_i else False
         regex = re.compile(pattern, ignore_case)
-    except re.error as e:
-        print(f"{pattern}: invalid pattern")
+    except re.error:
+        print(f'grep: {pattern} - отстой')
+        exceptions.logger.error(f'grep: {pattern} - отстой')
         return
 
-    files_to_search: list[str] = []
+    files_to_search = []
 
     if os.path.isfile(search_path):
         files_to_search = [search_path]
@@ -42,10 +41,11 @@ def run_grep(inp: list[str]) -> None:
                 for file in files:
                     files_to_search.append(os.path.join(root, file))
         else:
-            print("Нужна опция -r")
+            print(f'grep: Нужна опция -r для поиска внутри директории')
+            exceptions.logger.error(f'grep: Нужна опция -r для поиска внутри директории')
             return
 
-    flag: bool = False
+    k = 0
 
     for file_path in files_to_search:
         try:
@@ -54,9 +54,10 @@ def run_grep(inp: list[str]) -> None:
                     line = line.strip()
                     if regex.search(line):
                         print(f"{os.path.basename(file_path)}:{num}:{line}")
-                        flag = True
-        except Exception as e:
-            print("1", e)
+                        k += 1
+        except Exception:
+            continue
 
-    if not flag:
+    if not k:
         print(f"Не удалось найти строки, содержащие pattern: {pattern}")
+    exceptions.logger.info(f'grep: OK')

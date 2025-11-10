@@ -1,19 +1,18 @@
 import os
 import stat
 from datetime import datetime
-from utils.my_logger import logger
-from utils.errors_handler import handle_error
+from src import exceptions
 
 
-def assign(lines: list[str]) -> None:
-    lens: list[int] = []
+def assign(lines: list[list[str]]) -> None:
+    lens = []
     for line in lines:
         if line[0] == '?':
             lens.append(1)
         else:
             lens.append(len(line[1]))
 
-    max_ln: int = max(4, max(lens))
+    max_ln = max(4, max(lens))
 
     print(f"MODE{' ' * (8 + (max_ln - 4))}SIZE{' ' * 9}DATE   TIME     NAME")
     for line in lines:
@@ -25,26 +24,26 @@ def assign(lines: list[str]) -> None:
 
 
 def get_time(unix_time: datetime):
-    date: str = datetime.strftime(unix_time, '%d %b %Y')
-    time: str = datetime.strftime(unix_time, '%H:%M')
+    date = datetime.strftime(unix_time, '%d %b %Y')
+    time = datetime.strftime(unix_time, '%H:%M')
     return date, time
 
 
 def get_info(abspath: str, file_dir: str) -> list[str]:
     try:
         stats = os.stat(os.path.join(abspath, file_dir))
-        mode: str = stat.filemode(stats.st_mode)
-        size: int = stats.st_size
+        mode = stat.filemode(stats.st_mode)
+        size = stats.st_size
         date, time = get_time(datetime.fromtimestamp(stats.st_mtime))
-        name: str = file_dir
+        name = file_dir
         return list(map(str, [mode, size, date, time, name]))
     except (FileNotFoundError, OSError, PermissionError):
         return ['?', file_dir]
 
 
-def run_ls(inp: list[str | None] = []) -> None:
-    options: list[str] = []
-    pathes: list[str] = []
+def run_ls(inp: list[str]) -> None:
+    options = []
+    pathes = []
 
     for i in inp:
         if i.startswith('-'):
@@ -54,37 +53,49 @@ def run_ls(inp: list[str | None] = []) -> None:
     if not pathes:
         pathes.append(os.getcwd())
 
-    if len(set(options)) == 1 and options[0] != '-l':
-        handle_error("invalid_option", "ls", options[0], need_log=True)
-        return
+    if options:
+        if len(set(options)) > 1:
+            raise exceptions.InvalidAmountArguments('ls')
+        if options[0] != '-l':
+            raise exceptions.InvalidOption('ls', options[0])
 
-    elif len(set(options)) > 1:
-        handle_error("invalid_amount_options", "ls", need_log=True)
-        return
+    k = 0
 
     for path in pathes:
-        abspath: str = path if os.path.isabs(path) else os.path.abspath(path)
+        abspath = path if os.path.isabs(path) else os.path.abspath(path)
 
-        if os.path.exists(abspath):
-            if len(pathes) > 1:
-                print(f"{path}:")
-            if not options:
-                logger.info("OK. command 'ls' is successful complete")
-                if os.path.isdir(abspath):
+        if not os.path.exists(path):
+            print(f"{path}: Нет такого пути")
+            continue
+
+        if len(pathes) > 1:
+            print(f"{path}:")
+
+        if not options:
+            if os.path.isdir(abspath):
+                try:
                     print(os.listdir(abspath))
-                else:
-                    print(os.path.split(abspath)[1])
+                    k += 1
+                except PermissionError:
+                    print(f"{path}: Недостаточно прав")
             else:
-                logger.info(f"OK. command ls is successful complete")
-                lines = []
-                if os.path.isdir(abspath):
-                    for file_dir in os.listdir(path):
-                        info: list[str] = get_info(abspath, file_dir)
-                        lines.append(info)
-                else:
-                    info: list[str] = get_info(os.path.split(abspath)[0], os.path.split(abspath)[1])
-                    lines.append(info)
-                assign(lines)
-                print()
+                print(os.path.basename(abspath))
+                k += 1
         else:
-            handle_error("path_not_found", "ls", path, need_log=True)
+            lines = []
+            k += 1
+
+            if os.path.isdir(abspath):
+                for file_dir in os.listdir(abspath):
+                    info = get_info(abspath, file_dir)
+                    lines.append(info)
+            else:
+                info = get_info(os.path.dirname(abspath), os.path.basename(abspath))
+                lines.append(info)
+            assign(lines)
+            print()
+
+    if k:
+        exceptions.logger.info("ls: OK")
+        return
+    exceptions.logger.error('ls: Не OK')

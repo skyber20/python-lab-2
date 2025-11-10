@@ -1,5 +1,6 @@
 import zipfile
 import os
+from src import exceptions
 
 
 def is_folder_empty(folder: str) -> bool:
@@ -13,32 +14,30 @@ def is_folder_empty(folder: str) -> bool:
 
 def run_zip(inp: list[str]) -> None:
     if len(inp) != 2:
-        print("нужны 2 аргумента")
-        return
+        raise exceptions.InvalidAmountArguments('zip')
 
-    folder_path: str = os.path.abspath(inp[0])
-    archive_path: str = os.path.abspath(inp[1])
+    folder_path = os.path.abspath(inp[0])
+    archive_path = os.path.abspath(inp[1])
 
     if not os.path.isdir(folder_path):
-        print(f"{inp[0]}: Не папка")
-        return
+        raise exceptions.IsNotDir('zip', os.path.basename(folder_path))
 
     if is_folder_empty(folder_path):
-        print(f"{inp[0]}: Папка пустая. Не получится архивировать")
-        return
+        raise exceptions.EmptyDir('zip', os.path.basename(folder_path))
 
     archive_path = archive_path if archive_path.endswith(".zip") else archive_path + ".zip"
 
     if not os.path.exists(os.path.dirname(archive_path)):
-        print(f"{inp[1]}: Невозможно архивировать папку в несуществующий путь")
-        return
+        raise exceptions.PathNotExists('zip', os.path.dirname(archive_path))
 
     try:
         with zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for root, dirs, files in os.walk(folder_path):
                 for file in files:
-                    file_path: str = os.path.join(root, file)
-                    rel: str = os.path.relpath(file_path, os.path.dirname(folder_path))
+                    file_path = os.path.join(root, file)
+                    rel = os.path.relpath(file_path, os.path.dirname(folder_path))
                     zipf.write(file_path, arcname=rel)
-    except Exception as e:
-        print('1', e)
+        exceptions.logger.info('zip: OK')
+    except Exception:
+        print(f'Не удалось архивировать {os.path.basename(folder_path)}')
+        exceptions.logger.error(f'Не удалось архивировать {os.path.basename(folder_path)}')

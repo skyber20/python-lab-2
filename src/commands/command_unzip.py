@@ -1,27 +1,25 @@
 import zipfile
 import os
+from src import exceptions
 
 
 def run_unzip(inp: list[str]) -> None:
     if len(inp) != 1:
-        print("нужен 1 аргумент")
-        return
+        raise exceptions.InvalidAmountArguments('unzip')
 
-    archive_path: str = os.path.abspath(inp[0])
+    archive_path = os.path.abspath(inp[0])
     archive_path = archive_path if archive_path.endswith('.zip') else archive_path + '.zip'
 
     if not os.path.exists(archive_path):
-        print("Архива не существует")
-        return
+        raise exceptions.PathNotExists('unzip', os.path.basename(archive_path))
 
     try:
         with zipfile.ZipFile(archive_path, 'r') as zipf:
             if not zipf.namelist():
-                print("Архив пустой. Не получится разархивировать")
-                return
+                raise exceptions.EmptyDir('unzip', os.path.basename(archive_path))
 
             zipf.extractall(os.path.dirname(archive_path))
+        exceptions.logger.info('unzip: OK')
     except Exception as e:
-        print(e)
-
-
+        print(f'Не удалось разархивировать {os.path.basename(archive_path)}')
+        exceptions.logger.error(f'Не удалось разархивировать {os.path.basename(archive_path)}')

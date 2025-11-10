@@ -1,13 +1,12 @@
 import shutil
 import os
-from utils.my_logger import logger
-from utils.errors_handler import handle_error
 from src.commands.command_undo import save_action
+from src import exceptions
 
 
 def run_cp(inp: list[str]) -> None:
-    options: list[str] = []
-    pathes: list[str] = []
+    options = []
+    pathes = []
 
     for i in inp:
         if i.startswith('-'):
@@ -16,16 +15,13 @@ def run_cp(inp: list[str]) -> None:
             pathes.append(i)
 
     if len(pathes) < 2:
-        handle_error("invalid_amount_params", "cp", need_log=True)
-        return
+        raise exceptions.InvalidAmountPaths('cp')
 
-    if len(set(options)) > 1:
-        handle_error("invalid_amount_options", "cp", need_log=True)
-        return
-
-    if options and options[0] != '-r':
-        handle_error("invalid_option", "cp", options[0], need_log=True)
-        return
+    if options:
+        if len(set(options)) > 1:
+            raise exceptions.InvalidAmountOptions('cp')
+        if options[0] != '-r':
+            raise exceptions.InvalidOption('cp', options[0])
 
     destination = os.path.abspath(pathes[-1])
     k = 0
@@ -36,11 +32,11 @@ def run_cp(inp: list[str]) -> None:
         'is_dirs': []
     }
 
-    for p in pathes[:-1]:
-        source = os.path.abspath(p)
+    for path in pathes[:-1]:
+        source = os.path.abspath(path)
 
         if not os.path.exists(source):
-            handle_error("path_not_found", "cp", p)
+            print(f'{path}: Нет такого пути')
             continue
 
         if os.path.isdir(source) and not options:
@@ -51,12 +47,10 @@ def run_cp(inp: list[str]) -> None:
             destination = os.path.join(destination, os.path.basename(source))
 
         if not os.path.exists(os.path.dirname(destination)):
-            print(f"{os.path.dirname(destination)}: нельзя копировать папку/файл по несуществующему пути")
-            continue
+            raise exceptions.PathNotExists('cp', os.path.dirname(destination))
 
         if os.path.exists(destination):
-            print(f"{os.path.basename(destination)} уже существует")
-            continue
+            print(f'{os.path.basename(destination)}: Путь уже существует')
 
         try:
             if os.path.isdir(source):
@@ -73,6 +67,6 @@ def run_cp(inp: list[str]) -> None:
 
     if k:
         save_action(dict_for_undo)
-        logger.info("OK. command 'cp' is successful complete")
+        exceptions.logger.info("cp: OK")
         return
-    logger.error("rm: Error")
+    exceptions.logger.error("cp: Не OK")

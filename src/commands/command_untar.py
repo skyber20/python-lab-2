@@ -1,28 +1,25 @@
 import tarfile
-import zipfile
 import os
+from src import exceptions
 
 
 def run_untar(inp: list[str]) -> None:
     if len(inp) != 1:
-        print("нужен 1 аргумент")
-        return
+        raise exceptions.InvalidAmountArguments('untar')
 
-    archive_path: str = os.path.abspath(inp[0])
+    archive_path = os.path.abspath(inp[0])
     archive_path = archive_path if archive_path.endswith('.tar.gz') else archive_path + '.tar.gz'
 
     if not os.path.exists(archive_path):
-        print("Архива не существует")
-        return
+        raise exceptions.PathNotExists('untar', os.path.basename(archive_path))
 
     try:
         with tarfile.open(archive_path, 'r:gz') as tarf:
             if not tarf.getmembers():
-                print("Архив пустой. Не получится разархивировать")
-                return
+                raise exceptions.EmptyDir('untar', os.path.basename(archive_path))
 
             tarf.extractall(os.path.dirname(archive_path))
-    except Exception as e:
-        print(e)
-
-
+        exceptions.logger.info('untar: OK')
+    except Exception:
+        print(f'Не удалось разархивировать {os.path.basename(archive_path)}')
+        exceptions.logger.error(f'Не удалось разархивировать {os.path.basename(archive_path)}')

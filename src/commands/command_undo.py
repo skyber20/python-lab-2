@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 from src.constants import UNDO_FILE
+from src import exceptions
 
 
 def create_undo_file() -> str:
@@ -47,6 +48,7 @@ def execute_undo_action(inp: dict[str, str | list[str | bool]]) -> bool:
     success = check_exist_paths(sources, destinations)
 
     if not success:
+        exceptions.logger.error("undo: Не OK")
         return False
 
     if command == 'cp':
@@ -60,13 +62,13 @@ def execute_undo_action(inp: dict[str, str | list[str | bool]]) -> bool:
         for source, dest in zip(destinations, sources):
             os.rename(source, dest)
 
-    return success
+    exceptions.logger.info("undo: OK")
+    return True
 
 
 def run_undo(inp: list[str]) -> None:
     if inp:
-        print("какие то аргументы ненужные")
-        return
+        raise exceptions.InvalidAmountArguments('undo')
 
     undo_file = create_undo_file()
     with open(undo_file, 'r', encoding='utf-8') as f:
@@ -74,6 +76,7 @@ def run_undo(inp: list[str]) -> None:
 
     if not actions[0]:
         print("Нет операций для undo")
+        exceptions.logger.info('undo: OK')
         return
 
     success = execute_undo_action(actions[-1])

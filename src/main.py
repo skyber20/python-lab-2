@@ -1,15 +1,16 @@
 import os
 import oslex
 import sys
+import logging
 from command_registry import file_commands
-from utils.my_logger import logger
-from utils.errors_handler import handle_error
 from src.commands.command_history import run_history
+from src.constants import enum_exceptions
 
 
 def main() -> None:
     while sys.stdin:
         inp = input(f"{os.getcwd()}> ")
+        logger = logging.getLogger('logger')
         logger.info(inp)
         run_history(inp=inp, show=False)
 
@@ -27,7 +28,11 @@ def main() -> None:
         try:
             file_commands[tokens[0]](tokens[1:])
         except KeyError:
-            handle_error("command_not_found", tokens[0], need_log=True)
+            print(f'{tokens[0]}: Такая команда не поддерживается')
+            logger.error(f'{tokens[0]}: Такая команда не поддерживается')
+        except enum_exceptions as e:
+            print(e)
+            logger.error(str(e))
 
 
 if __name__ == '__main__':

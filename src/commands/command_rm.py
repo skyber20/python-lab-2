@@ -1,13 +1,13 @@
 import os
 from datetime import datetime
-from utils.my_logger import logger
 from src.constants import TRASH_DIR
 from src.commands.command_undo import save_action
+from src import exceptions
 
 
 def create_trash() -> str:
-    cur_dir: str = os.path.dirname(__file__)
-    abs_trash: str = os.path.abspath(os.path.join(cur_dir, '..', '..', TRASH_DIR))
+    cur_dir = os.path.dirname(__file__)
+    abs_trash = os.path.abspath(os.path.join(cur_dir, '..', '..', TRASH_DIR))
 
     if not os.path.exists(abs_trash):
         os.makedirs(abs_trash)
@@ -16,18 +16,18 @@ def create_trash() -> str:
 
 
 def del_file_dir(abs_path: str, trash_dir: str) -> str:
-    name: str = os.path.basename(abs_path)
-    timestamp: str = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    name_to_trash: str = f"{timestamp}_{name}"
-    path_to_trash: str = os.path.join(trash_dir, name_to_trash)
+    name = os.path.basename(abs_path)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    name_to_trash = f"{timestamp}_{name}"
+    path_to_trash = os.path.join(trash_dir, name_to_trash)
 
     os.rename(abs_path, path_to_trash)
     return path_to_trash
 
 
 def run_rm(inp: list[str]) -> None:
-    options: list[str] = []
-    pathes: list[str] = []
+    options = []
+    pathes = []
     for i in inp:
         if i.startswith('-'):
             options.append(i)
@@ -35,19 +35,13 @@ def run_rm(inp: list[str]) -> None:
             pathes.append(i)
 
     if not pathes:
-        logger.error("at least 1 path must be entered")
-        print("rm: At least 1 path must be entered")
-        return
+        raise exceptions.InvalidAmountPaths('rm')
 
-    if len(set(options)) > 1:
-        logger.error(f"rm: Only one option can be introduced")
-        print(f"rm: Only one option can be introduced")
-        return
-
-    if options and options[0] != '-r':
-        logger.error(f"rm: {options[0]}: invalid option")
-        print(f"rm: {options[0]}: invalid option")
-        return
+    if options:
+        if len(set(options)) > 1:
+            raise exceptions.InvalidAmountOptions('rm')
+        if options[0] != '-r':
+            raise exceptions.InvalidOption('rm', options[0])
 
     trash_dir = create_trash()
     k = 0
@@ -88,7 +82,9 @@ def run_rm(inp: list[str]) -> None:
 
     if k:
         save_action(dict_for_undo)
+        exceptions.logger.info('rm: OK')
         return
     elif not answer_y:
+        exceptions.logger.info('rm: OK')
         return
-    logger.error("rm: Error")
+    exceptions.logger.error("rm: Не OK")
