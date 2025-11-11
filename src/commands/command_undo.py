@@ -6,8 +6,8 @@ from src import exceptions
 
 
 def create_undo_file() -> str:
-    cur_dir: str = os.path.dirname(__file__)
-    abs_undo_file: str = os.path.abspath(os.path.join(cur_dir, '..', '..', UNDO_FILE))
+    cur_dir = os.path.dirname(__file__)
+    abs_undo_file = os.path.abspath(os.path.join(cur_dir, '..', '..', UNDO_FILE))
 
     if not os.path.exists(abs_undo_file):
         with open(abs_undo_file, 'w', encoding='utf-8') as f:
@@ -19,12 +19,12 @@ def create_undo_file() -> str:
 def save_action(inp: dict[str, str | list[str | bool]]) -> None:
     undo_file = create_undo_file()
     with open(undo_file, 'r', encoding='utf-8') as f:
-       actions = json.load(f)
+        actions = json.load(f)
 
     actions.append(inp)
 
     with open(undo_file, 'w', encoding='utf-8') as f:
-        json.dump(inp, f, ensure_ascii=False, indent=2)
+        json.dump(actions, f, ensure_ascii=False, indent=2)
 
 
 def check_exist_paths(sources: list[str], destinations: list[str]) -> bool:
@@ -48,7 +48,7 @@ def execute_undo_action(inp: dict[str, str | list[str | bool]]) -> bool:
     success = check_exist_paths(sources, destinations)
 
     if not success:
-        exceptions.logger.error("undo: Не OK")
+        exceptions.logger.error("undo: Ошибка с путями")
         return False
 
     if command == 'cp':
@@ -72,9 +72,9 @@ def run_undo(inp: list[str]) -> None:
 
     undo_file = create_undo_file()
     with open(undo_file, 'r', encoding='utf-8') as f:
-        actions = [json.load(f)]
+        actions = json.load(f)
 
-    if not actions[0]:
+    if not actions:
         print("Нет операций для undo")
         exceptions.logger.info('undo: OK')
         return

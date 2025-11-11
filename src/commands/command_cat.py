@@ -13,7 +13,7 @@ def run_cat(inp: list[str]) -> None:
             pathes.append(i)
 
     if options:
-        raise exceptions.InvalidAmountArguments('cat')
+        raise exceptions.InvalidOption('cat', options[0])
 
     k = 0
 

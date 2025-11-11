@@ -21,6 +21,9 @@ enum_exceptions = (
     AlreadyExists,
     EmptyDir
 )
+
+SHELL_LOG = 'shell.log'
 TRASH_DIR = '.trash'
 UNDO_FILE = "undo_commands.json"
+HISTORY_FILE = '.history.txt'
 MAX_LINES = 20

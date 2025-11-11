@@ -18,10 +18,6 @@ def main() -> None:
             print("Bye")
             break
 
-        if inp == 'help':
-            dict_descr_cmds = {}
-            continue
-
         clear_inp = inp.replace("'", '"').replace("\\", "/")
         tokens = oslex.split(clear_inp)
 

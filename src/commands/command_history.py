@@ -1,11 +1,10 @@
 import os
-from src.constants import MAX_LINES
+from src.constants import MAX_LINES, HISTORY_FILE
 
 
 def create_history_file() -> str:
-    history_file = '.history.txt'
     cur_dir = os.path.dirname(__file__)
-    abs_history = os.path.abspath(os.path.join(cur_dir, '..', '..', history_file))
+    abs_history = os.path.abspath(os.path.join(cur_dir, '..', '..', HISTORY_FILE))
 
     if not os.path.exists(abs_history):
         with open(abs_history, 'w', encoding='utf-8'):

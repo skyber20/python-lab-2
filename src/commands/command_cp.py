@@ -51,6 +51,7 @@ def run_cp(inp: list[str]) -> None:
 
         if os.path.exists(destination):
             print(f'{os.path.basename(destination)}: Путь уже существует')
+            continue
 
         try:
             if os.path.isdir(source):

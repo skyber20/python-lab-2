@@ -19,7 +19,7 @@ def run_mv(inp: list[str]) -> None:
     if options:
         raise exceptions.InvalidAmountOptions('mw')
 
-    destination = os.path.abspath(pathes[-1])
+    dest = os.path.abspath(pathes[-1])
     k = 0
     dict_for_undo = {
         'command': 'mv',
@@ -28,14 +28,16 @@ def run_mv(inp: list[str]) -> None:
     }
 
     for p in pathes[:-1]:
-        source: str = os.path.abspath(p)
+        source = os.path.abspath(p)
 
         if not os.path.exists(source):
             print("Нет такого пути")
             continue
 
-        if os.path.isdir(destination):
-            destination: str = os.path.join(destination, os.path.basename(source))
+        if os.path.isdir(dest):
+            destination = os.path.join(dest, os.path.basename(source))
+        else:
+            destination = dest
 
         if os.path.exists(destination):
             print(f"{os.path.basename(destination)} уже существует")
