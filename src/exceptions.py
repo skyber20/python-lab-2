@@ -1,7 +1,3 @@
-import logging
-logger = logging.getLogger('logger')
-
-
 class InvalidAmountArguments(Exception):
     def __init__(self, command: str):
         super().__init__(f"{command}: Некорректное количество аргументов")

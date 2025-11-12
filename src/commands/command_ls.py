@@ -2,6 +2,7 @@ import os
 import stat
 from datetime import datetime
 from src import exceptions
+from utils.my_logger import logger
 
 
 def assign(lines: list[list[str]]) -> None:
@@ -43,15 +44,15 @@ def get_info(abspath: str, file_dir: str) -> list[str]:
 
 def run_ls(inp: list[str]) -> None:
     options = []
-    pathes = []
+    paths = []
 
     for i in inp:
         if i.startswith('-'):
             options.append(i)
         else:
-            pathes.append(i)
-    if not pathes:
-        pathes.append(os.getcwd())
+            paths.append(i)
+    if not paths:
+        paths.append(os.getcwd())
 
     if options:
         if len(set(options)) > 1:
@@ -61,14 +62,14 @@ def run_ls(inp: list[str]) -> None:
 
     k = 0
 
-    for path in pathes:
+    for path in paths:
         abspath = path if os.path.isabs(path) else os.path.abspath(path)
 
         if not os.path.exists(path):
             print(f"{path}: Нет такого пути")
             continue
 
-        if len(pathes) > 1:
+        if len(paths) > 1:
             print(f"{path}:")
 
         if not options:
@@ -96,6 +97,6 @@ def run_ls(inp: list[str]) -> None:
             print()
 
     if k:
-        exceptions.logger.info("ls: OK")
+        logger.info("ls: OK")
         return
-    exceptions.logger.error('ls: Не OK')
+    logger.error('ls: Не OK')

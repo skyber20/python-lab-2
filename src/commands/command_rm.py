@@ -3,6 +3,7 @@ from datetime import datetime
 from src.constants import TRASH_DIR
 from src.commands.command_undo import save_action
 from src import exceptions
+from utils.my_logger import logger
 
 
 def create_trash() -> str:
@@ -13,6 +14,21 @@ def create_trash() -> str:
         os.makedirs(abs_trash)
 
     return abs_trash
+
+
+def is_protected_path(path: str) -> bool:
+    root_path = os.path.abspath('/')
+    current_dir = os.path.abspath('.')
+
+    if path in [root_path, current_dir]:
+        print('Невозможно удалить текущий и корневой каталоги')
+        return True
+
+    if current_dir.startswith(path):
+        print('Невозможно удалить родительскую папку')
+        return True
+
+    return False
 
 
 def del_file_dir(abs_path: str, trash_dir: str) -> str:
@@ -27,14 +43,14 @@ def del_file_dir(abs_path: str, trash_dir: str) -> str:
 
 def run_rm(inp: list[str]) -> None:
     options = []
-    pathes = []
+    paths = []
     for i in inp:
         if i.startswith('-'):
             options.append(i)
         else:
-            pathes.append(i)
+            paths.append(i)
 
-    if not pathes:
+    if not paths:
         raise exceptions.InvalidAmountPaths('rm')
 
     if options:
@@ -52,11 +68,9 @@ def run_rm(inp: list[str]) -> None:
         'destinations': [],
     }
 
-    for p in pathes:
+    for p in paths:
         source = os.path.abspath(p)
-        if p in ['/', '.', '..'] or source == os.path.abspath('.'):
-            s: str = "rm: cannot be deleted '.', '..', '/'"
-            print(s)
+        if is_protected_path(source):
             continue
 
         if not os.path.exists(source):
@@ -82,9 +96,9 @@ def run_rm(inp: list[str]) -> None:
 
     if k:
         save_action(dict_for_undo)
-        exceptions.logger.info('rm: OK')
+        logger.info('rm: OK')
         return
     elif not answer_y:
-        exceptions.logger.info('rm: OK')
+        logger.info('rm: OK')
         return
-    exceptions.logger.error("rm: Не OK")
+    logger.error("rm: Не OK")

@@ -1,6 +1,7 @@
 import tarfile
 import os
 from src import exceptions
+from utils.my_logger import logger
 
 
 def run_untar(inp: list[str]) -> None:
@@ -19,7 +20,7 @@ def run_untar(inp: list[str]) -> None:
                 raise exceptions.EmptyDir('untar', os.path.basename(archive_path))
 
             tarf.extractall(os.path.dirname(archive_path))
-        exceptions.logger.info('untar: OK')
+        logger.info('untar: OK')
     except Exception:
         print(f'Не удалось разархивировать {os.path.basename(archive_path)}')
-        exceptions.logger.error(f'Не удалось разархивировать {os.path.basename(archive_path)}')
+        logger.error(f'Не удалось разархивировать {os.path.basename(archive_path)}')

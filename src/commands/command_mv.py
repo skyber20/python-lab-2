@@ -1,25 +1,26 @@
 import os
 from src.commands.command_undo import save_action
 from src import exceptions
+from utils.my_logger import logger
 
 
 def run_mv(inp: list[str]) -> None:
     options = []
-    pathes = []
+    paths = []
 
     for i in inp:
         if i.startswith('-'):
             options.append(i)
         else:
-            pathes.append(i)
+            paths.append(i)
 
-    if len(pathes) < 2:
+    if len(paths) < 2:
         raise exceptions.InvalidAmountPaths('mv')
 
     if options:
         raise exceptions.InvalidAmountOptions('mw')
 
-    dest = os.path.abspath(pathes[-1])
+    dest = os.path.abspath(paths[-1])
     k = 0
     dict_for_undo = {
         'command': 'mv',
@@ -27,7 +28,7 @@ def run_mv(inp: list[str]) -> None:
         'destinations': []
     }
 
-    for p in pathes[:-1]:
+    for p in paths[:-1]:
         source = os.path.abspath(p)
 
         if not os.path.exists(source):
@@ -53,6 +54,6 @@ def run_mv(inp: list[str]) -> None:
 
     if k:
         save_action(dict_for_undo)
-        exceptions.logger.info(f"mv: OK")
+        logger.info(f"mv: OK")
         return
-    exceptions.logger.error("mv: Не OK")
+    logger.error("mv: Не OK")

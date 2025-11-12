@@ -2,19 +2,20 @@ import shutil
 import os
 from src.commands.command_undo import save_action
 from src import exceptions
+from utils.my_logger import logger
 
 
 def run_cp(inp: list[str]) -> None:
     options = []
-    pathes = []
+    paths = []
 
     for i in inp:
         if i.startswith('-'):
             options.append(i)
         else:
-            pathes.append(i)
+            paths.append(i)
 
-    if len(pathes) < 2:
+    if len(paths) < 2:
         raise exceptions.InvalidAmountPaths('cp')
 
     if options:
@@ -23,7 +24,7 @@ def run_cp(inp: list[str]) -> None:
         if options[0] != '-r':
             raise exceptions.InvalidOption('cp', options[0])
 
-    destination = os.path.abspath(pathes[-1])
+    destination = os.path.abspath(paths[-1])
     k = 0
     dict_for_undo = {
         'command': 'cp',
@@ -32,7 +33,7 @@ def run_cp(inp: list[str]) -> None:
         'is_dirs': []
     }
 
-    for path in pathes[:-1]:
+    for path in paths[:-1]:
         source = os.path.abspath(path)
 
         if not os.path.exists(source):
@@ -68,6 +69,6 @@ def run_cp(inp: list[str]) -> None:
 
     if k:
         save_action(dict_for_undo)
-        exceptions.logger.info("cp: OK")
+        logger.info("cp: OK")
         return
-    exceptions.logger.error("cp: Не OK")
+    logger.error("cp: Не OK")

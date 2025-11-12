@@ -5,12 +5,12 @@ import logging
 from command_registry import file_commands
 from src.commands.command_history import run_history
 from src.constants import enum_exceptions
+from utils.my_logger import logger
 
 
 def main() -> None:
     while sys.stdin:
         inp = input(f"{os.getcwd()}> ")
-        logger = logging.getLogger('logger')
         logger.info(inp)
         run_history(inp=inp, show=False)
 
@@ -29,6 +29,8 @@ def main() -> None:
         except enum_exceptions as e:
             print(e)
             logger.error(str(e))
+        except Exception:
+            print("Другая ошибка")
 
 
 if __name__ == '__main__':

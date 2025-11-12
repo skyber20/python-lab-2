@@ -1,6 +1,7 @@
 import zipfile
 import os
 from src import exceptions
+from utils.my_logger import logger
 
 
 def is_folder_empty(folder: str) -> bool:
@@ -37,7 +38,7 @@ def run_zip(inp: list[str]) -> None:
                     file_path = os.path.join(root, file)
                     rel = os.path.relpath(file_path, os.path.dirname(folder_path))
                     zipf.write(file_path, arcname=rel)
-        exceptions.logger.info('zip: OK')
+        logger.info('zip: OK')
     except Exception:
         print(f'Не удалось архивировать {os.path.basename(folder_path)}')
-        exceptions.logger.error(f'Не удалось архивировать {os.path.basename(folder_path)}')
+        logger.error(f'Не удалось архивировать {os.path.basename(folder_path)}')

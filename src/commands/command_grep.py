@@ -1,6 +1,7 @@
 import os
 import re
 from src import exceptions
+from utils.my_logger import logger
 
 
 def run_grep(inp: list[str]) -> None:
@@ -28,7 +29,7 @@ def run_grep(inp: list[str]) -> None:
         regex = re.compile(pattern, ignore_case)
     except re.error:
         print(f'grep: {pattern} - отстой')
-        exceptions.logger.error(f'grep: {pattern} - отстой')
+        logger.error(f'grep: {pattern} - отстой')
         return
 
     files_to_search = []
@@ -42,7 +43,7 @@ def run_grep(inp: list[str]) -> None:
                     files_to_search.append(os.path.join(root, file))
         else:
             print(f'grep: Нужна опция -r для поиска внутри директории')
-            exceptions.logger.error(f'grep: Нужна опция -r для поиска внутри директории')
+            logger.error(f'grep: Нужна опция -r для поиска внутри директории')
             return
 
     k = 0
@@ -60,4 +61,4 @@ def run_grep(inp: list[str]) -> None:
 
     if not k:
         print(f"Не удалось найти строки, содержащие pattern: {pattern}")
-    exceptions.logger.info(f'grep: OK')
+    logger.info(f'grep: OK')

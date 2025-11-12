@@ -1,6 +1,7 @@
 import tarfile
 import os
 from src import exceptions
+from utils.my_logger import logger
 
 
 def is_folder_empty(folder: str) -> bool:
@@ -37,7 +38,7 @@ def run_tar(inp: list[str]) -> None:
                     file_path = os.path.join(root, file)
                     rel = os.path.relpath(file_path, os.path.dirname(folder_path))
                     tarf.add(file_path, arcname=rel)
-        exceptions.logger.info('tar: OK')
+        logger.info('tar: OK')
     except Exception:
         print(f'Не удалось архивировать {os.path.basename(folder_path)}')
-        exceptions.logger.error(f'Не удалось архивировать {os.path.basename(folder_path)}')
+        logger.error(f'Не удалось архивировать {os.path.basename(folder_path)}')

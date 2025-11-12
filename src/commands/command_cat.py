@@ -1,23 +1,24 @@
 from pathlib import Path
 from src import exceptions
+from utils.my_logger import logger
 
 
 def run_cat(inp: list[str]) -> None:
     options = []
-    pathes = []
+    paths = []
 
     for i in inp:
         if i.startswith('-'):
             options.append(i)
         else:
-            pathes.append(i)
+            paths.append(i)
 
     if options:
         raise exceptions.InvalidOption('cat', options[0])
 
     k = 0
 
-    for i in pathes:
+    for i in paths:
         path = Path(i)
         abs_path = path.absolute()
 
@@ -38,6 +39,6 @@ def run_cat(inp: list[str]) -> None:
             print(f'{path} - Недостаточно прав')
 
     if k:
-        exceptions.logger.info("cat: OK")
+        logger.info("cat: OK")
         return
-    exceptions.logger.error('ls: Не OK')
+    logger.error('ls: Не OK')

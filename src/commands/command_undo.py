@@ -3,6 +3,7 @@ import os
 import shutil
 from src.constants import UNDO_FILE
 from src import exceptions
+from utils.my_logger import logger
 
 
 def create_undo_file() -> str:
@@ -48,7 +49,7 @@ def execute_undo_action(inp: dict[str, str | list[str | bool]]) -> bool:
     success = check_exist_paths(sources, destinations)
 
     if not success:
-        exceptions.logger.error("undo: Ошибка с путями")
+        logger.error("undo: Ошибка с путями")
         return False
 
     if command == 'cp':
@@ -62,7 +63,7 @@ def execute_undo_action(inp: dict[str, str | list[str | bool]]) -> bool:
         for source, dest in zip(destinations, sources):
             os.rename(source, dest)
 
-    exceptions.logger.info("undo: OK")
+    logger.info("undo: OK")
     return True
 
 
@@ -76,7 +77,7 @@ def run_undo(inp: list[str]) -> None:
 
     if not actions:
         print("Нет операций для undo")
-        exceptions.logger.info('undo: OK')
+        logger.info('undo: OK')
         return
 
     success = execute_undo_action(actions[-1])

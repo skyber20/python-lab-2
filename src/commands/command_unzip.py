@@ -1,6 +1,7 @@
 import zipfile
 import os
 from src import exceptions
+from utils.my_logger import logger
 
 
 def run_unzip(inp: list[str]) -> None:
@@ -19,7 +20,7 @@ def run_unzip(inp: list[str]) -> None:
                 raise exceptions.EmptyDir('unzip', os.path.basename(archive_path))
 
             zipf.extractall(os.path.dirname(archive_path))
-        exceptions.logger.info('unzip: OK')
+        logger.info('unzip: OK')
     except Exception as e:
         print(f'Не удалось разархивировать {os.path.basename(archive_path)}')
-        exceptions.logger.error(f'Не удалось разархивировать {os.path.basename(archive_path)}')
+        logger.error(f'Не удалось разархивировать {os.path.basename(archive_path)}')

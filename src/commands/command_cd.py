@@ -1,6 +1,6 @@
 import os.path
-from utils.my_logger import logger
 from src import exceptions
+from utils.my_logger import logger
 
 
 def run_cd(inp: list[str]) -> None:
@@ -17,7 +17,7 @@ def run_cd(inp: list[str]) -> None:
 
     if inp[0].startswith('~'):
         inp[0] = inp[0].replace('~', os.path.expanduser('~').replace("\\", "/"))
-    abspath: str = inp[0] if os.path.isabs(inp[0]) else os.path.abspath(inp[0])
+    abspath = inp[0] if os.path.isabs(inp[0]) else os.path.abspath(inp[0])
 
     if os.path.exists(abspath):
         if os.path.isdir(abspath):
