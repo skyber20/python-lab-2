@@ -68,7 +68,7 @@ def run_cp(inp: list[str]) -> None:
             print(f'Не удалось скопировать папку/файл')
 
     if k:
-        save_action(dict_for_undo)
         logger.info("cp: OK")
+        save_action(dict_for_undo)
         return
     logger.error("cp: Не OK")

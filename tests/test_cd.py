@@ -14,7 +14,7 @@ def test_without_args_and_wave(mock_logger_info: Mock):
     assert all('cd: OK' == args[0] for args, _ in mock_logger_info.call_args_list)
 
 
-def test_cd(fs: FakeFilesystem, mock_logger_info: Mock):
+def test_cmd_cd(fs: FakeFilesystem, mock_logger_info: Mock):
     fs.create_dir('test/in_test')
 
     run_command('cd', ['test'])
@@ -29,7 +29,7 @@ def test_cd(fs: FakeFilesystem, mock_logger_info: Mock):
     assert all('cd: OK' == args[0] for args, _ in mock_logger_info.call_args_list)
 
 
-def test_cd_errors(fs: FakeFilesystem, mock_logger_error: Mock, mock_print: Mock):
+def test_cmd_cd_errors(fs: FakeFilesystem, mock_logger_error: Mock, mock_print: Mock):
     fs.create_dir('test')
     fs.create_file('test/smth.txt')
 

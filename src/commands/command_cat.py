@@ -23,22 +23,22 @@ def run_cat(inp: list[str]) -> None:
         abs_path = path.absolute()
 
         if not abs_path.exists():
-            print(f'Файла {path} не существует')
+            print(f'Пути {i} не существует')
             continue
 
         if abs_path.is_dir():
-            print(f'{path} - Не текстовый файл')
+            print(f'{i} - Не текстовый файл')
             continue
 
         try:
             print(abs_path.read_text(encoding='utf-8'), end='\n\n')
             k += 1
         except UnicodeDecodeError:
-            print(f'{path} - Не текстовый файл')
+            print(f'{i} - Не текстовый файл')
         except PermissionError:
-            print(f'{path} - Недостаточно прав')
+            print(f'{i} - Недостаточно прав')
 
     if k:
         logger.info("cat: OK")
         return
-    logger.error('ls: Не OK')
+    logger.error('cat: Не OK')
