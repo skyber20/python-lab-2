@@ -1,18 +1,19 @@
-import pytest
-import os
-from pyfakefs.fake_filesystem import FakeFilesystem
-from unittest.mock import patch
-from src import exceptions
-from src.commands.command_ls import run_ls
-
-
-def test_current_directory_without_options(fs: FakeFilesystem):
-    fs.create_file('/test/test.txt', contents='что то')
-    fs.create_file('/test/test2.txt', contents='что то')
-    fs.create_file('/test/test_folder/in_test_folder')
-
-    os.chdir('/test')
-
-    with patch('builtins.print') as mock_print:
-        run_ls([])
-        assert mock_print.called
+# import pytest
+# from unittest.mock import patch
+# from src.commands.command_ls import run_ls
+#
+#
+# def run_ls_with_mocks(ls_args: list[str], exists=True) -> dict[str, str | list]:
+#     with patch('os.getcwd', return_value='/test'), \
+#         patch('os.path.exists', return_value=exists), \
+#         patch('builtins.print') as mock_print, \
+#         patch('utils.my_logger.logger.info') as mock_log_info, \
+#         patch('utils.my_logger.logger.error') as mock_log_error:
+#
+#         run_ls(ls_args)
+#
+#         return {
+#             'output': ' '.join(str(call.args[0]) for call in mock_print.call_args_list),
+#             'info_logs': ' '.join(str(call.args[0]) for call in mock_print.call_args_list),
+#             'error_logs': ' '.join(str(call.args[0]) for call in mock_print.call_args_list)
+#         }

@@ -1,15 +1,23 @@
 import pytest
-from unittest.mock import Mock
 from pytest_mock import MockerFixture
-from pyfakefs.fake_filesystem import FakeFilesystem
+from unittest.mock import Mock
 
 
 @pytest.fixture
-def fake_logger(mocker: MockerFixture) -> Mock:
-    mock_logger = mocker.patch('utils.my_logger.logger.info')
-    return mock_logger
+def mock_print(mocker: MockerFixture) -> Mock:
+    return mocker.patch('builtins.print')
 
 
 @pytest.fixture
-def fake_logger(mocker: MockerFixture) -> Mock:
-    mock_logger = mocker.patch('utils.my_logger.logger.info')
+def mock_input(mocker: MockerFixture) -> MockerFixture:
+    return mocker.patch('builtins.input')
+
+
+@pytest.fixture
+def mock_logger_info(mocker: MockerFixture) -> Mock:
+    return mocker.patch('utils.my_logger.logger.info')
+
+
+@pytest.fixture
+def mock_logger_error(mocker: MockerFixture) -> Mock:
+    return mocker.patch('utils.my_logger.logger.error')

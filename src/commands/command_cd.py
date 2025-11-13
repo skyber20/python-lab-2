@@ -24,6 +24,6 @@ def run_cd(inp: list[str]) -> None:
             logger.info("cd: OK")
             os.chdir(abspath)
         else:
-            raise exceptions.IsNotDir('cd', inp[0])
+            raise exceptions.IsNotDir('cd', os.path.basename(inp[0]))
     else:
-        raise exceptions.PathNotExists('cd', inp[0])
+        raise exceptions.PathNotExists('cd', os.path.basename(inp[0]))
