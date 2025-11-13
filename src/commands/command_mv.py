@@ -18,7 +18,7 @@ def run_mv(inp: list[str]) -> None:
         raise exceptions.InvalidAmountPaths('mv')
 
     if options:
-        raise exceptions.InvalidAmountOptions('mw')
+        raise exceptions.InvalidAmountOptions('mv')
 
     dest = os.path.abspath(paths[-1])
     k = 0
@@ -40,6 +40,9 @@ def run_mv(inp: list[str]) -> None:
         else:
             destination = dest
 
+        if not os.path.exists(os.path.dirname(destination)):
+            raise exceptions.PathNotExists('mv', os.path.dirname(destination))
+
         if os.path.exists(destination):
             print(f"{os.path.basename(destination)} уже существует")
             continue
@@ -53,7 +56,7 @@ def run_mv(inp: list[str]) -> None:
             print('Не удалось переместить папку/файл')
 
     if k:
-        save_action(dict_for_undo)
         logger.info(f"mv: OK")
+        save_action(dict_for_undo)
         return
     logger.error("mv: Не OK")

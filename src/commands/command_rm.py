@@ -95,8 +95,8 @@ def run_rm(inp: list[str]) -> None:
             print("Не удалось удалить папку/файл")
 
     if k:
-        save_action(dict_for_undo)
         logger.info('rm: OK')
+        save_action(dict_for_undo)
         return
     elif not answer_y:
         logger.info('rm: OK')

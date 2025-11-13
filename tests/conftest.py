@@ -9,11 +9,6 @@ def mock_print(mocker: MockerFixture) -> Mock:
 
 
 @pytest.fixture
-def mock_input(mocker: MockerFixture) -> MockerFixture:
-    return mocker.patch('builtins.input')
-
-
-@pytest.fixture
 def mock_logger_info(mocker: MockerFixture) -> Mock:
     return mocker.patch('utils.my_logger.logger.info')
 
