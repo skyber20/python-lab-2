@@ -4,6 +4,11 @@ from utils.my_logger import logger
 
 
 def run_cd(inp: list[str]) -> None:
+    '''
+    Переходит по пути, указанным юзером
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     if len(inp) > 1:
         raise exceptions.InvalidAmountArguments('cd')
 

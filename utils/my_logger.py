@@ -3,7 +3,11 @@ import os
 from src.constants import SHELL_LOG
 
 
-def setup_my_logger():
+def setup_my_logger() -> logging.Logger:
+    '''
+    Создание своего логгера
+    :return: логгер
+    '''
     my_logger_create = logging.getLogger('logger')
     my_logger_create.setLevel(logging.INFO)
 

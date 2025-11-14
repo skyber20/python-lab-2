@@ -6,6 +6,11 @@ from utils.my_logger import logger
 
 
 def assign(lines: list[list[str]]) -> None:
+    '''
+    Функция для красивого вывода юзеру
+    :param lines: строки, что нужно красиво вывести на экран
+    :return: ничего
+    '''
     lens = []
     for line in lines:
         if line[0] == '?':
@@ -24,13 +29,24 @@ def assign(lines: list[list[str]]) -> None:
                   f"{' ' * (7 - len(line[3]))}{line[3]}  {line[4]}")
 
 
-def get_time(unix_time: datetime):
+def get_time(unix_time: datetime) -> tuple[str, str]:
+    '''
+    переводим время в нужный формат из unix time
+    :param unix_time: время в формате unix
+    :return: кортеж из даты и времени
+    '''
     date = datetime.strftime(unix_time, '%d %b %Y')
     time = datetime.strftime(unix_time, '%H:%M')
     return date, time
 
 
 def get_info(abspath: str, file_dir: str) -> list[str]:
+    '''
+    если была опция -l. Для подробного вывода
+    :param abspath: путь файла/папки
+    :param file_dir: название папки/файла
+    :return: подробная инфа о файле/папке в виде списка
+    '''
     try:
         stats = os.stat(os.path.join(abspath, file_dir))
         mode = stat.filemode(stats.st_mode)
@@ -43,6 +59,11 @@ def get_info(abspath: str, file_dir: str) -> list[str]:
 
 
 def run_ls(inp: list[str]) -> None:
+    '''
+    Выводит список файлов и папок в директории. Если с фалом -l, то выводит и подробную инфу
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     options = []
     paths = []
 

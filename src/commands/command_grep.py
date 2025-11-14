@@ -5,7 +5,12 @@ from utils.my_logger import logger
 
 
 def run_grep(inp: list[str]) -> None:
-    if len(inp) != 2:
+    '''
+    Поиск по паттерну по указанному пути. -i для игнорирования регистра, -r для рекурсивного поиска
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
+    if len(inp) < 2:
         raise exceptions.InvalidAmountArguments('grep')
 
     pattern = inp[0]

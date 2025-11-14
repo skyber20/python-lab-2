@@ -5,6 +5,11 @@ from utils.my_logger import logger
 
 
 def run_mv(inp: list[str]) -> None:
+    '''
+    Переименовывает или перемещает файл/папку
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     options = []
     paths = []
 

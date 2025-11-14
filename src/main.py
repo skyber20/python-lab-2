@@ -8,6 +8,13 @@ from utils.my_logger import logger
 
 
 def run_command(cmd: str, inp: list[str]) -> tuple[bool, Exception | None]:
+    '''
+
+    :param cmd: команда, введенная юзером
+    :param inp: Остальной пользовательский вход
+    :return: кортеж, где первый элемент - удачно/неудачно выполненная команда, второй элемент -
+    тип ошибки, если она была
+    '''
     try:
         file_commands[cmd](inp)
         return True, None
@@ -25,6 +32,10 @@ def run_command(cmd: str, inp: list[str]) -> tuple[bool, Exception | None]:
 
 
 def main() -> None:
+    '''
+    Точка входа
+    :return: ничего
+    '''
     while sys.stdin:
         inp = input(f"{os.getcwd()}> ")
         logger.info(inp)
@@ -41,4 +52,7 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    '''
+    Запуск мейна
+    '''
     main()

@@ -7,6 +7,10 @@ from utils.my_logger import logger
 
 
 def create_trash() -> str:
+    '''
+    Создание .trash в корневой папке проекта, если такового нет
+    :return: путь до файла .trash
+    '''
     cur_dir = os.path.dirname(__file__)
     abs_trash = os.path.abspath(os.path.join(cur_dir, '..', '..', TRASH_DIR))
 
@@ -17,6 +21,11 @@ def create_trash() -> str:
 
 
 def is_protected_path(path: str) -> bool:
+    '''
+    Проверка на то, что нельзя удалять. Нельзя удалять текущую папку, родительскую папку, корневой каталог
+    :param path: путь
+    :return: это запрещенный путь?
+    '''
     root_path = os.path.abspath('/')
     current_dir = os.path.abspath('.')
 
@@ -32,6 +41,12 @@ def is_protected_path(path: str) -> bool:
 
 
 def del_file_dir(abs_path: str, trash_dir: str) -> str:
+    '''
+    Перемещаем файл/папку в .trash
+    :param abs_path: Путь для удаления
+    :param trash_dir: Перемещаем в корзину
+    :return: Путь, куда переместили объект (для undo)
+    '''
     name = os.path.basename(abs_path)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     name_to_trash = f"{timestamp}_{name}"
@@ -42,6 +57,11 @@ def del_file_dir(abs_path: str, trash_dir: str) -> str:
 
 
 def run_rm(inp: list[str]) -> None:
+    '''
+    Для перемещения в .trash. Если папка, то нужна -r
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     options = []
     paths = []
     for i in inp:

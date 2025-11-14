@@ -6,6 +6,11 @@ from utils.my_logger import logger
 
 
 def run_cp(inp: list[str]) -> None:
+    '''
+    Копировать файл/папку. Папку, если есть -r
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     options = []
     paths = []
 
@@ -24,7 +29,7 @@ def run_cp(inp: list[str]) -> None:
         if options[0] != '-r':
             raise exceptions.InvalidOption('cp', options[0])
 
-    destination = os.path.abspath(paths[-1])
+    dest = os.path.abspath(paths[-1])
     k = 0
     dict_for_undo = {
         'command': 'cp',
@@ -44,8 +49,10 @@ def run_cp(inp: list[str]) -> None:
             print("Для копирования папки нужна опция -r")
             continue
 
-        if os.path.isdir(destination):
-            destination = os.path.join(destination, os.path.basename(source))
+        if os.path.isdir(dest):
+            destination = os.path.join(dest, os.path.basename(source))
+        else:
+            destination = dest
 
         if not os.path.exists(os.path.dirname(destination)):
             raise exceptions.PathNotExists('cp', os.path.dirname(destination))

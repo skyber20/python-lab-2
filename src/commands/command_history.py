@@ -3,6 +3,10 @@ from src.constants import MAX_LINES, HISTORY_FILE
 
 
 def create_history_file() -> str:
+    '''
+    Создание .history в корневой папке проекта, если такового нет
+    :return: путь до файла .history
+    '''
     cur_dir = os.path.dirname(__file__)
     abs_history = os.path.abspath(os.path.join(cur_dir, '..', '..', HISTORY_FILE))
 
@@ -14,6 +18,13 @@ def create_history_file() -> str:
 
 
 def run_history(n: list[str] = [], inp: str = '', show: bool = True) -> None:
+    '''
+
+    :param n: сколько строк вывести
+    :param inp: записываем пользовательский ввод в .history
+    :param show: True, если юзер сам вызывал команду history. False, если команда была вызвана для записи команды от юзера
+    :return: ничего
+    '''
     abs_history = create_history_file()
 
     if not show:

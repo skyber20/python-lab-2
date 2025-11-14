@@ -5,6 +5,11 @@ from utils.my_logger import logger
 
 
 def is_folder_empty(folder: str) -> bool:
+    '''
+    Не будем архивировать папки с пустым содержимым
+    :param folder: Папку, которую нужно проверить - пустая или нет
+    :return: да/нет
+    '''
     for file_dir in os.scandir(folder):
         if os.path.isfile(file_dir):
             return False
@@ -14,6 +19,11 @@ def is_folder_empty(folder: str) -> bool:
 
 
 def run_tar(inp: list[str]) -> None:
+    '''
+    Архивируем папку в формат .tar.gz
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     if len(inp) != 2:
         raise exceptions.InvalidAmountArguments('tar')
 

@@ -5,6 +5,11 @@ from utils.my_logger import logger
 
 
 def run_unzip(inp: list[str]) -> None:
+    '''
+    Разархивируем папку с расширением .tar.gz
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     if len(inp) != 1:
         raise exceptions.InvalidAmountArguments('unzip')
 

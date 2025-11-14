@@ -4,6 +4,11 @@ from utils.my_logger import logger
 
 
 def run_cat(inp: list[str]) -> None:
+    '''
+    Выводит содержимое текстового файла на экран
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     options = []
     paths = []
 

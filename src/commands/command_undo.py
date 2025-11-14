@@ -7,6 +7,11 @@ from utils.my_logger import logger
 
 
 def create_undo_file() -> str:
+    '''
+    Создание undo_commands.json в корневой папке проекта, если такового нет для записвания туда последних команд
+    rm, mv, cp
+    :return: путь до файла undo_commands.json
+    '''
     cur_dir = os.path.dirname(__file__)
     abs_undo_file = os.path.abspath(os.path.join(cur_dir, '..', '..', UNDO_FILE))
 
@@ -18,6 +23,11 @@ def create_undo_file() -> str:
 
 
 def save_action(inp: dict[str, str | list[str | bool]]) -> None:
+    '''
+    Сохраняем последнее действие (cp, mv, rm) в undo_commands.json
+    :param inp:
+    :return:
+    '''
     undo_file = create_undo_file()
     with open(undo_file, 'r', encoding='utf-8') as f:
         actions = json.load(f)
@@ -29,6 +39,10 @@ def save_action(inp: dict[str, str | list[str | bool]]) -> None:
 
 
 def check_exist_paths(sources: list[str], destinations: list[str]) -> bool:
+    '''
+    Проверяем, все ли destinations и sources существует. если хотя бы 1 нет - undo считается неудачным
+    :return:
+    '''
     flag = True
     for source, dest in zip(destinations, sources):
         if not os.path.exists(source):
@@ -43,6 +57,11 @@ def check_exist_paths(sources: list[str], destinations: list[str]) -> bool:
 
 
 def execute_undo_action(inp: dict[str, str | list[str | bool]]) -> bool:
+    '''
+    undo для различных типов команд (rm, cp, mv)
+    :param inp: Пользовательский ввод
+    :return: удачный/неудачный undo?
+    '''
     command = inp['command']
     sources = inp['sources']
     destinations = inp['destinations']
@@ -68,6 +87,12 @@ def execute_undo_action(inp: dict[str, str | list[str | bool]]) -> bool:
 
 
 def run_undo(inp: list[str]) -> None:
+    '''
+    Запуск логики undo. Если в success записалось True, то undo успешен и последнюю команду удаляем
+    Иначе - не удаляем последнюю команду
+    :param inp: Пользовательский ввод
+    :return: ничего
+    '''
     if inp:
         raise exceptions.InvalidAmountArguments('undo')
 
