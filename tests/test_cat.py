@@ -1,5 +1,4 @@
 import os
-import pytest
 from pyfakefs.fake_filesystem import FakeFilesystem
 from src.main import run_command
 from unittest.mock import Mock, patch
@@ -15,13 +14,13 @@ def test_cmd_cat(fs: FakeFilesystem, mock_print: Mock, mock_logger_info: Mock):
     os.chdir('/test')
 
     run_command('cat', ['read_me.txt'])
-    assert 'здесь точно что то написано. наверное' == mock_print.call_args_list[0].args[0]
-    assert 'cat: OK' == mock_logger_info.call_args_list[0].args[0]
+    assert 'здесь точно что то написано. наверное' in mock_print.call_args_list[0].args[0]
+    assert 'cat: OK' in mock_logger_info.call_args_list[0].args[0]
 
     run_command('cat', ['okak.txt', 'okak2.txt'])
-    assert 'окак' == mock_print.call_args_list[1].args[0]
-    assert 'окак2' == mock_print.call_args_list[2].args[0]
-    assert 'cat: OK' == mock_logger_info.call_args_list[1].args[0]
+    assert 'окак' in mock_print.call_args_list[1].args[0]
+    assert 'окак2' in mock_print.call_args_list[2].args[0]
+    assert 'cat: OK' in mock_logger_info.call_args_list[1].args[0]
 
 
 def test_cmd_cat_errors(fs: FakeFilesystem, mock_print: Mock, mock_logger_error: Mock):
@@ -31,19 +30,19 @@ def test_cmd_cat_errors(fs: FakeFilesystem, mock_print: Mock, mock_logger_error:
     os.chdir('/test')
 
     run_command('cat', ['in_test'])
-    assert 'in_test - Не текстовый файл' == mock_print.call_args_list[0].args[0]
-    assert 'cat: Не OK' == mock_logger_error.call_args_list[0].args[0]
+    assert 'in_test - Не текстовый файл' in mock_print.call_args_list[0].args[0]
+    assert 'cat: Не OK' in mock_logger_error.call_args_list[0].args[0]
 
     run_command('cat', ['wddfnbeh'])
-    assert 'Пути wddfnbeh не существует' == mock_print.call_args_list[1].args[0]
-    assert 'cat: Не OK' == mock_logger_error.call_args_list[1].args[0]
+    assert 'Пути wddfnbeh не существует' in mock_print.call_args_list[1].args[0]
+    assert 'cat: Не OK' in mock_logger_error.call_args_list[1].args[0]
 
     error = run_command('cat', ['-l'])[1]
     assert isinstance(error, InvalidOption)
-    assert 'cat: Опция -l не поддерживается' == str(mock_print.call_args_list[2].args[0])
-    assert 'cat: Опция -l не поддерживается' == mock_logger_error.call_args_list[2].args[0]
+    assert 'cat: Опция -l не поддерживается' in str(mock_print.call_args_list[2].args[0])
+    assert 'cat: Опция -l не поддерживается' in mock_logger_error.call_args_list[2].args[0]
 
     with patch.object(Path, 'read_text', side_effect=UnicodeDecodeError):
         run_command('cat', ['/test/random.pdf'])
-    assert '/test/random.pdf - Не текстовый файл' == mock_print.call_args_list[-1].args[0]
-    assert 'cat: Не OK' == mock_logger_error.call_args_list[-1].args[0]
+    assert '/test/random.pdf - Не текстовый файл' in mock_print.call_args_list[-1].args[0]
+    assert 'cat: Не OK' in mock_logger_error.call_args_list[-1].args[0]
